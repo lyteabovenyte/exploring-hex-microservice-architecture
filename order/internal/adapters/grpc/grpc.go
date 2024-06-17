@@ -17,7 +17,7 @@ func (a Adapter) Create(ctx context.Context, request *order.CreateOrderRequest) 
 		})
 	}
 	newOrder := domain.NewOrder(request.UserId, orderItems)
-	result, err := a.api.PlaceOrder(newOrder)
+	result, err := a.api.PlaceOrder(newOrder) // the api knows how to contact the payment service
 	if err != nil {
 		return nil, err
 	}
