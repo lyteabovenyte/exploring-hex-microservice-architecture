@@ -1,6 +1,8 @@
 package api
 
 import (
+	"strings"
+
 	"github.com/lyteabovenyte/microservices-main/order/internal/application/core/domain"
 	"github.com/lyteabovenyte/microservices-main/order/internal/ports"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -31,10 +33,19 @@ func (a *Application) PlaceOrder(order domain.Order) (domain.Order, error) {
 	paymentErr := a.payment.Charge(&order)
 	if paymentErr != nil {
 		// Error with details
-		st, _ := status.FromError(paymentErr) // resolves status from a payment error
+		st := status.Convert(paymentErr)
+		var allErrors []string
+		for _, details := range st.Details() {
+			switch t := details.(type) {
+			case *errdetails.BadRequest:
+				for _, violation := range t.GetFieldViolations() {
+					allErrors = append(allErrors, violation.Description)
+				}
+			}
+		}
 		fieldErr := &errdetails.BadRequest_FieldViolation{
 			Field:       "payment",
-			Description: st.Message(),
+			Description: strings.Join(allErrors, "\n"),
 		}
 		badReq := &errdetails.BadRequest{}
 		badReq.FieldViolations = append(badReq.FieldViolations, fieldErr)
