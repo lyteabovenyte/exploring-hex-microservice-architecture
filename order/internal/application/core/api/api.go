@@ -13,7 +13,7 @@ import (
 // the API depends on DBPort
 type Application struct {
 	db      ports.DBPort
-	payment ports.PaymentPort
+	payment ports.PaymentPort // the order service depends on the payment service to charge the customers.
 }
 
 // DBPort is passed during the app initialization
