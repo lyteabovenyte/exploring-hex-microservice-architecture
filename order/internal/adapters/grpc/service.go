@@ -7,6 +7,7 @@ import (
 	"net"
 
 	"github.com/huseyinbabal/microservices-proto/golang/order"
+	"github.com/lyteabovenyte/microservices-main/order/config"
 	"github.com/lyteabovenyte/microservices-main/order/internal/ports"
 	"google.golang.org/grpc"
 )

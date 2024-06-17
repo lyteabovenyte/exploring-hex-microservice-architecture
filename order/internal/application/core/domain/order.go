@@ -18,9 +18,17 @@ type Order struct {
 
 func NewOrder(customerId int64, orderItems []OrderItem) Order {
 	return Order{
-		CreatedAt: time.Now().Unix(),
-		Status: "Pending",
+		CreatedAt:  time.Now().Unix(),
+		Status:     "Pending",
 		CustomerID: customerId,
 		OrderItems: orderItems,
 	}
+}
+
+func (o *Order) TotalPrice() float32 {
+	var totalPrice float32
+	for _, orderItem := range o.OrderItems {
+		totalPrice += orderItem.UnitPrice * float32(orderItem.Quantity)
+	}
+	return totalPrice
 }
