@@ -31,12 +31,12 @@ type Adapter struct {
 func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 	db, OpenErr := gorm.Open((mysql.Open(dataSourceUrl)), &gorm.Config{})
 	if OpenErr != nil {
-		return nil, fmt.Errorf("db connection error: ", OpenErr)
+		return nil, fmt.Errorf("db connection error: %v", OpenErr)
 	}
 	// be sure the tables are created carefully
 	err := db.AutoMigrate(&Order{}, OrderItem{})
 	if err != nil {
-		return nil, fmt.Errorf("db migration error: ", err)
+		return nil, fmt.Errorf("db migration error: %v", err)
 	}
 	return &Adapter{db: db}, nil
 }
@@ -49,17 +49,17 @@ func (a Adapter) Get(id string) (domain.Order, error) {
 	for _, orderItem := range orderEntity.OrderItems {
 		orderItems = append(orderItems, domain.OrderItem{
 			ProductCode: orderItem.ProductCode,
-			UnitPrice: orderItem.UnitPrice,
-			Quantity: orderItem.Quantity,
+			UnitPrice:   orderItem.UnitPrice,
+			Quantity:    orderItem.Quantity,
 		})
 	}
 
 	order := domain.Order{
-		ID: int64(orderEntity.ID),
+		ID:         int64(orderEntity.ID),
 		CustomerID: orderEntity.CustomerID,
-		Status: orderEntity.Status,
+		Status:     orderEntity.Status,
 		OrderItems: orderItems,
-		CreatedAt: orderEntity.CreatedAt.UnixNano(),
+		CreatedAt:  orderEntity.CreatedAt.UnixNano(),
 	}
 
 	return order, res.Error
@@ -71,14 +71,14 @@ func (a Adapter) Save(order *domain.Order) error {
 	for _, orderItem := range order.OrderItems {
 		orderItems = append(orderItems, OrderItem{
 			ProductCode: orderItem.ProductCode,
-			UnitPrice: orderItem.UnitPrice,
-			Quantity: orderItem.Quantity,
+			UnitPrice:   orderItem.UnitPrice,
+			Quantity:    orderItem.Quantity,
 		})
 	}
 
 	orderModel := Order{
 		CustomerID: order.CustomerID,
-		Status: order.Status,
+		Status:     order.Status,
 		OrderItems: orderItems,
 	}
 
