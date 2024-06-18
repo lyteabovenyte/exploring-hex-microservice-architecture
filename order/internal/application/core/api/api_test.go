@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -17,8 +16,8 @@ type mockedPayment struct {
 	mock.Mock
 }
 
-func (p *mockedPayment) Charge(ctx context.Context, order *domain.Order) error {
-	args := p.Called(ctx, order)
+func (p *mockedPayment) Charge(order *domain.Order) error {
+	args := p.Called(order)
 	return args.Error(0)
 }
 
@@ -26,19 +25,19 @@ type mockedDB struct {
 	mock.Mock
 }
 
-func (d *mockedDB) Save(ctx context.Context, order *domain.Order) error {
-	args := d.Called(ctx, order)
+func (d *mockedDB) Save(order *domain.Order) error {
+	args := d.Called(order)
 	return args.Error(0)
 }
 
-func (d *mockedDB) Get(ctx context.Context, id string) (domain.Order, error) {
-	args := d.Called(ctx, id)
+func (d *mockedDB) Get(id string) (domain.Order, error) {
+	args := d.Called(id)
 	return args.Get(0).(domain.Order), args.Error(1)
 }
 
 func TestPlaceOrder(t *testing.T) {
 	payment := new(mockedPayment)
-	db := new(mockedDb)
+	db := new(mockedDB)
 	payment.On("Charge", mock.Anything, mock.Anything).Return(nil)
 	db.On("Save", mock.Anything, mock.Anything).Return(nil)
 
@@ -59,7 +58,7 @@ func TestPlaceOrder(t *testing.T) {
 
 func Test_Should_Return_Error_When_Payment_Fail(t *testing.T) {
 	payment := new(mockedPayment)
-	db := new(mockedDb)
+	db := new(mockedDB)
 	payment.On("Charge", mock.Anything).Return(errors.New("insufficient balance"))
 	db.On("Save", mock.Anything).Return(nil)
 
