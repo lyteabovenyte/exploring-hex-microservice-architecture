@@ -1,4 +1,4 @@
 ##### gRPC microservices in go
-####### what's in there?
-- [x] using hexagonal artitecture for each service and domain functionality application.
-- [ ] 
+exploring microservices implementation with Hex Arch + e2e testing
+
+###### discription on the code itself 🤓
